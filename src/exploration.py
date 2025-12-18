@@ -1,4 +1,4 @@
-#exploration.py
+# exploration.py
 
 import pandas as pd
 import numpy as np
@@ -7,6 +7,7 @@ import seaborn as sns
 import os
 import re
 
+COLORS = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99']
 
 def sanitize_filename(title):
     sanitized = re.sub(r'[\\/*?:"<>|]', "", title)
@@ -17,7 +18,8 @@ def sanitize_filename(title):
 def plot_boxplots(df, numeric_cols, save_path):
     for col in numeric_cols:
         plt.figure(figsize=(4, 4))
-        sns.boxplot(x=df[col])
+        # Applied palette here
+        sns.boxplot(x=df[col], palette=COLORS)
         title = f'Box plot of {col}'
         plt.title(title)
         
@@ -36,13 +38,13 @@ def plot_unique_values_bar(df, save_path):
     for i, column in enumerate(columns):
         value_counts = {str(k): v for k, v in df[column].value_counts().items()}
         
-        axes[i].bar(value_counts.keys(), value_counts.values())
+        # Applied palette to bars
+        axes[i].bar(value_counts.keys(), value_counts.values(), color=COLORS)
         axes[i].set_title(f"{column} unique values count")
         axes[i].set_ylabel("Count")
         axes[i].set_xlabel("Values")
         plt.setp(axes[i].get_xticklabels(), rotation=30, horizontalalignment='right')
 
-    # Hide any unused subplots
     for j in range(len(columns), len(axes)):
         fig.delaxes(axes[j])
         
@@ -63,7 +65,8 @@ def plot_churn_by_category(df, save_path):
 
     for i, column in enumerate(columns):
         counts = pd.crosstab(df[column], df['Churn'])
-        counts.plot(kind='bar', color=["red", "darkblue"], ax=axes[i])
+        # Updated color parameter to use palette
+        counts.plot(kind='bar', color=COLORS, ax=axes[i])
         
         title = f"Churn distribution by {column}"
         axes[i].set_title(title)
@@ -83,7 +86,8 @@ def plot_churn_by_category(df, save_path):
 def plot_tenure_churn(df, save_path):
     plt.figure(figsize=(18, 4))
     counts = pd.crosstab(df['tenure'], df['Churn'])
-    ax = counts.plot(kind='bar', color=["red", "darkblue"], figsize=(18, 4))
+    # Updated color parameter to use palette
+    ax = counts.plot(kind='bar', color=COLORS, figsize=(18, 4))
     title = "Churn by Tenure"
     plt.title(title)
     
@@ -94,10 +98,10 @@ def plot_tenure_churn(df, save_path):
 
 def plot_payment_method_analysis(df, save_path):
     proportions_dictionary = df['PaymentMethod'].value_counts().to_dict()
-    colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99']
 
     plt.figure(figsize=(7, 3))
-    plt.pie(proportions_dictionary.values(), autopct='%1.1f%%', pctdistance=0.6, colors=colors)
+    # Using the global COLORS list
+    plt.pie(proportions_dictionary.values(), autopct='%1.1f%%', pctdistance=0.6, colors=COLORS)
     plt.legend(labels=proportions_dictionary.keys(), bbox_to_anchor=(1, 0, 0.5, 1))
     title_pie = "Proportions of Different Payment Methodes"
     plt.title(title_pie)
@@ -107,7 +111,8 @@ def plot_payment_method_analysis(df, save_path):
     plt.close()
     
     churn_by_payment = pd.crosstab(df['PaymentMethod'], df['Churn'])
-    churn_by_payment.plot(kind='bar', figsize=(12, 3), color=['#66b3ff', '#ff9999'])
+    # Updated color parameter to use palette
+    churn_by_payment.plot(kind='bar', figsize=(12, 3), color=COLORS)
     
     title_bar = "Churn By Payment Method"
     plt.title(title_bar, fontsize=16)
@@ -135,7 +140,8 @@ def view_binned_feature_by_columns(df, feature, columns, bin_number, save_path):
 
     for i, column in enumerate(columns):
         counts = pd.crosstab(df[column], df[binned_feature_col])
-        counts.plot(kind='bar', ax=axes[i], legend=False)
+        # Added color=COLORS here
+        counts.plot(kind='bar', ax=axes[i], legend=False, color=COLORS)
         
         axes[i].set_title(f"{feature} distribution by: {column}")
         axes[i].set_ylabel("Count")
@@ -155,8 +161,10 @@ def view_binned_feature_by_columns(df, feature, columns, bin_number, save_path):
 
 
 def main():
-
     save_path = "../visualisations"
+    
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
 
     try:
         df = pd.read_csv("../data/customer_data.csv").set_index('customerID')
@@ -164,14 +172,11 @@ def main():
         print("Error: customer_data.csv not found. Make sure it's in the ../data/ directory.")
         return
 
-    #Data Cleaning 
+    # Data Cleaning 
     df['TotalCharges'] = df["TotalCharges"].replace(" ", np.nan)
-    df.dropna(subset=['TotalCharges'], inplace=True) # Drop rows with missing TotalCharges
+    df.dropna(subset=['TotalCharges'], inplace=True)
     df['TotalCharges'] = df['TotalCharges'].astype(float)
-    
-    #from 0/1 to No/Yes
     df['SeniorCitizen'] = df['SeniorCitizen'].map({1: 'Yes', 0: 'No'})
-
 
     print("Generating Visualizations \n")
 
@@ -179,9 +184,7 @@ def main():
     plot_boxplots(df, numeric_cols, save_path)
 
     plot_unique_values_bar(df.copy(), save_path)
-
     plot_churn_by_category(df.copy(), save_path)
-
     plot_payment_method_analysis(df, save_path)
     plot_tenure_churn(df, save_path)
 
