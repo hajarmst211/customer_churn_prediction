@@ -4,10 +4,22 @@
 3. Tuning parameters
 4. cross validation
 ---
-# Evaluate the Predictions
-Now you compare your predictions (y_pred) with the actual true labels you held back (y_test). This is where the evaluation metrics come in.
-Your Typical Order of Evaluation:
-(a) accuracy_score(y_test, y_pred): Start here for a quick, high-level sense of performance. But remember its weakness with imbalanced data.
-(b) confusion_matrix(y_test, y_pred): Use this next to see the raw numbers of your model's successes and failures (True Positives, False Positives, etc.). It provides deep insight.
-(c) classification_report(y_test, y_pred): This is your primary summary tool. It gives you the precision, recall, and f1-score for each class, all in one neat report. This is often the most valuable printout for understanding overall performance.
-(d) roc_auc_score(y_test, y_pred_proba): Use this to get a single, robust score that measures how well your model separates the classes, regardless of the classification threshold. Note: You must use the predicted probabilities (y_pred_proba), not the final predictions (y_pred).
+# data preparation for training
+
+### Splitting data
+- We've seen that the dataset has imbalanced classes thus we need to keep the same initial distribution in the training and testing dataset. Solution: set the *stratify* parameter to the target column.
+- Random state: since the random state must be a fixed just so that the train and test sets will be the same every time we try to split the data. I will set it to a random but **fixed** integer. 
+
+### Training the model
+- The weights are uniform because from the exploration, we found that there are some columns inversely related to churning but so important nevertheless.
+- the metric is haming because ewe are dealing with categorical and boolean data mostly
+
+- the data columns distributions is not normally shaped so we will use the MinMaxScaler
+
+### Classification report: 
+The model is doing good when the case is "NO" churning; 85% precision and 86% recall
+But when there client is churning, the precision goes down to 60% and the recall to 56%
+
+---
+<br>
+So overall knn does not suit this problem the best. We need to try and find a better model.
