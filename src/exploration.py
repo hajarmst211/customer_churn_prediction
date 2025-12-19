@@ -14,6 +14,31 @@ def sanitize_filename(title):
     sanitized = sanitized.replace(" ", "_")
     return f"{sanitized}.png"
 
+def feature_frequency(df, save_path):
+    columns = df.columns
+    n_cols = 2
+    n_rows = (len(columns )+1)//2
+    figure, axes = plt.subplots(
+                                n_rows ,
+                                n_cols,
+                                figsize = (10,2*n_rows),
+                                constrained_layout=True
+                                )
+    axes = axes.flatten()
+    for i,column in enumerate(columns):
+        axes[i].hist(df[column].dropna(), bins=30, color = '#ffcc99')
+        axes[i].set_title(column)
+        axes[i].set_ylabel("Frequency")
+    for j in range(len(columns), len(axes)):
+        figure.delaxes(axes[j])
+          
+    figure.tight_layout()
+    
+    title = "Features Distributions"
+    filename = sanitize_filename(title)
+    plt.savefig(os.path.join(save_path, filename))
+    print("Distribution figure saved succefully \n")
+    plt.close()
 
 def plot_boxplots(df, numeric_cols, save_path):
     for col in numeric_cols:
