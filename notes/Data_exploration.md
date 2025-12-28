@@ -1,6 +1,4 @@
 # Customer churn prediction project
-- this part is made by Hajar Moustaine
-
 
 # Exploring data
 
