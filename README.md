@@ -1,6 +1,7 @@
 # Customer Churn Analysis and Prediction
 
 A Python-based pipeline for exploring customer demographics and predicting churn using optimized K-Nearest Neighbors (KNN). This project automates data cleaning, generates comprehensive visualizations, and tunes a classification model to identify key churn drivers.
+This was a school project, there are still a lot of things to adjust.
 
 ## Table of Contents
 - [Overview](#overview)
